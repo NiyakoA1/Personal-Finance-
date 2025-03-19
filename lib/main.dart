@@ -7,6 +7,8 @@ void main() {
 }
 
 class FinanceTrackerApp extends StatelessWidget {
+  const FinanceTrackerApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -22,7 +24,7 @@ class FinanceTrackerApp extends StatelessWidget {
 }
 
 class TransactionProvider with ChangeNotifier {
-  List<String> _transactions = [];
+  final List<String> _transactions = [];
 
   List<String> get transactions => _transactions;
 
