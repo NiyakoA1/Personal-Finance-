@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,12 +30,31 @@ class BalanceSummary extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Balance Summary', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Total Income: ₹50,000', style: TextStyle(color: Colors.green)),
-              Text('Total Expenses: ₹30,000', style: TextStyle(color: Colors.red)),
-              Text('Savings: ₹20,000', style: TextStyle(color: Colors.blue)),
+              // Total Income Column
+              Column(
+                children: [
+                  Text('Total Income', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                  Text('₹50,000', style: TextStyle(color: Colors.green, fontSize: 18, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              // Total Expenses Column
+              Column(
+                children: [
+                  Text('Total Expenses', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                  Text('₹30,000', style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              // Savings Column
+              Column(
+                children: [
+                  Text('Savings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                  Text('₹20,000', style: TextStyle(color: Colors.blue, fontSize: 18, fontWeight: FontWeight.bold)),
+                ],
+              ),
             ],
           ),
         ],
@@ -43,6 +64,8 @@ class BalanceSummary extends StatelessWidget {
 }
 
 class NavigationTabs extends StatelessWidget {
+  const NavigationTabs({super.key});
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
