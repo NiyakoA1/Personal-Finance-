@@ -1,22 +1,38 @@
+// lib/home_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'add_transaction_screen.dart';
-import 'transaction_provider.dart'; // Import the provider for transaction management
+import 'transaction_provider.dart';
+
+// Screens for each tab (in lib/screens/ folder)
+import 'screens/transactions_screen.dart';
+import 'screens/categories_screen.dart';
+import 'screens/goals_screen.dart';
+import 'screens/reports_screen.dart';
+import 'screens/settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Finance Tracker')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black, // sets text/icon color
+        elevation: 0, // remove shadow if desired
+        centerTitle: true,
+        title: Text('Finance Tracker'),
+      ),
       body: Column(
         children: [
+          // Keep the same BalanceSummary from your original code
           BalanceSummary(),
           Expanded(
             child: DefaultTabController(
-              length: 5, // Number of tabs
+              length: 5, // We have five tabs
               child: Column(
                 children: [
-                  // TabBar to switch between different views
+                  // The TabBar colors
                   TabBar(
                     labelColor: Colors.blue,
                     unselectedLabelColor: Colors.grey,
@@ -28,38 +44,15 @@ class HomeScreen extends StatelessWidget {
                       Tab(icon: Icon(Icons.settings), text: 'Settings'),
                     ],
                   ),
+                  // Each tab below points to its own screen
                   Expanded(
                     child: TabBarView(
                       children: [
-                        // Transaction List Screen
-                        Consumer<TransactionProvider>(
-                          builder: (context, provider, child) {
-                            return ListView.builder(
-                              itemCount: provider.transactions.length,
-                              itemBuilder: (context, index) {
-                                final transaction = provider.transactions[index];
-                                return ListTile(
-                                  title: Text(transaction.type), // Transaction Type
-                                  subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Amount: ₹${transaction.amount}"), // Display amount
-                                      Text("Category: ${transaction.category}", style: TextStyle(color: Colors.grey)), // Display category
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                        // Placeholder for Category Breakdown
-                        Center(child: Text('Category Breakdown Placeholder')),
-                        // Placeholder for Savings Goals
-                        Center(child: Text('Savings Goals Placeholder')),
-                        // Placeholder for Reports
-                        Center(child: Text('Reports Placeholder')),
-                        // Placeholder for Settings
-                        Center(child: Text('Settings Placeholder')),
+                        TransactionsScreen(),
+                        CategoriesScreen(),
+                        GoalsScreen(),
+                        ReportsScreen(),
+                        SettingsScreen(),
                       ],
                     ),
                   ),
@@ -69,9 +62,9 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+      // Same floating button to add new transaction
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to the Add Transaction Screen
           Navigator.pushNamed(context, '/addTransaction');
         },
         child: Icon(Icons.add),
@@ -80,6 +73,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+// Same BalanceSummary widget with color-coded text
 class BalanceSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -88,32 +82,60 @@ class BalanceSummary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Balance Summary', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text('Balance Summary',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           SizedBox(height: 10),
           Consumer<TransactionProvider>(
             builder: (context, provider, child) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Total Income Column
+                  // Total Income
                   Column(
                     children: [
-                      Text('Total Income', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                      Text('₹${provider.totalIncome.toStringAsFixed(2)}', style: TextStyle(color: Colors.green, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('Total Income',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500)),
+                      Text(
+                        '₹${provider.totalIncome.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
-                  // Total Expenses Column
+                  // Total Expenses
                   Column(
                     children: [
-                      Text('Total Expenses', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                      Text('₹${provider.totalExpenses.toStringAsFixed(2)}', style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('Total Expenses',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500)),
+                      Text(
+                        '₹${provider.totalExpenses.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
-                  // Savings Column
+                  // Savings (Income - Expenses)
                   Column(
                     children: [
-                      Text('Savings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                      Text('₹${provider.totalSavings.toStringAsFixed(2)}', style: TextStyle(color: Colors.blue, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('Savings',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500)),
+                      Text(
+                        '₹${provider.totalSavings.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ],
