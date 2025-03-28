@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'transaction_provider.dart';
 
-// Screens for each tab (in lib/screens/ folder)
-import 'screens/transactions_screen.dart';
-import 'screens/categories_screen.dart';
-import 'screens/goals_screen.dart';
-import 'screens/reports_screen.dart';
+// The new or updated screens:
+import 'screens/transaction_list_screen.dart';
+import 'screens/category_breakdown_screen.dart';
+import 'screens/savings_goals_screen.dart';
 import 'screens/settings_screen.dart';
+// Keep the original ReportsScreen (if it still exists):
+import 'screens/reports_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -48,10 +49,15 @@ class HomeScreen extends StatelessWidget {
                   Expanded(
                     child: TabBarView(
                       children: [
-                        TransactionsScreen(),
-                        CategoriesScreen(),
-                        GoalsScreen(),
+                        // NEW: Uses TransactionListScreen
+                        TransactionListScreen(),
+                        // NEW: Uses CategoryBreakdownScreen (pie_chart-based)
+                        CategoryBreakdownScreen(),
+                        // NEW: Uses SavingsGoalsScreen
+                        SavingsGoalsScreen(),
+                        // Keep the existing ReportsScreen (if still in your project)
                         ReportsScreen(),
+                        // NEW: Uses the updated SettingsScreen
                         SettingsScreen(),
                       ],
                     ),
@@ -82,8 +88,10 @@ class BalanceSummary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Balance Summary',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(
+            'Balance Summary',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
           SizedBox(height: 10),
           Consumer<TransactionProvider>(
             builder: (context, provider, child) {
@@ -93,9 +101,10 @@ class BalanceSummary extends StatelessWidget {
                   // Total Income
                   Column(
                     children: [
-                      Text('Total Income',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500)),
+                      Text(
+                        'Total Income',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
                       Text(
                         '₹${provider.totalIncome.toStringAsFixed(2)}',
                         style: TextStyle(
@@ -109,9 +118,10 @@ class BalanceSummary extends StatelessWidget {
                   // Total Expenses
                   Column(
                     children: [
-                      Text('Total Expenses',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500)),
+                      Text(
+                        'Total Expenses',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
                       Text(
                         '₹${provider.totalExpenses.toStringAsFixed(2)}',
                         style: TextStyle(
@@ -125,9 +135,10 @@ class BalanceSummary extends StatelessWidget {
                   // Savings (Income - Expenses)
                   Column(
                     children: [
-                      Text('Savings',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500)),
+                      Text(
+                        'Savings',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
                       Text(
                         '₹${provider.totalSavings.toStringAsFixed(2)}',
                         style: TextStyle(
