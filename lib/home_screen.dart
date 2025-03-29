@@ -1,65 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'add_transaction_screen.dart';
-import 'transaction_provider.dart'; // Import the provider for transaction management
+import 'transaction_provider.dart';
+import 'category_breakdown_screen.dart';
+import 'savings_goals_screen.dart';
+import 'reports_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Finance Tracker')),
       body: Column(
         children: [
-          BalanceSummary(),
+          const BalanceSummary(),
           Expanded(
             child: DefaultTabController(
-              length: 5, // Number of tabs
+              length: 4,
               child: Column(
                 children: [
-                  // TabBar to switch between different views
                   TabBar(
                     labelColor: Colors.blue,
                     unselectedLabelColor: Colors.grey,
-                    tabs: [
+                    tabs: const [
                       Tab(icon: Icon(Icons.list), text: 'Transactions'),
                       Tab(icon: Icon(Icons.pie_chart), text: 'Categories'),
                       Tab(icon: Icon(Icons.savings), text: 'Goals'),
                       Tab(icon: Icon(Icons.bar_chart), text: 'Reports'),
-                      Tab(icon: Icon(Icons.settings), text: 'Settings'),
                     ],
                   ),
                   Expanded(
                     child: TabBarView(
                       children: [
-                        // Transaction List Screen
                         Consumer<TransactionProvider>(
                           builder: (context, provider, child) {
                             return ListView.builder(
                               itemCount: provider.transactions.length,
                               itemBuilder: (context, index) {
-                                final transaction = provider.transactions[index];
+                                final transaction =
+                                    provider.transactions[index];
                                 return ListTile(
-                                  title: Text(transaction.type), // Transaction Type
-                                  subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Amount: ₹${transaction.amount}"), // Display amount
-                                      Text("Category: ${transaction.category}", style: TextStyle(color: Colors.grey)), // Display category
-                                    ],
+                                  leading: Icon(
+                                    transaction.type == 'Income'
+                                        ? Icons.arrow_downward
+                                        : Icons.arrow_upward,
+                                    color:
+                                        transaction.type == 'Income'
+                                            ? Colors.green
+                                            : Colors.red,
+                                  ),
+                                  title: Text(
+                                    transaction.type != 'Income'
+                                        ? transaction.category
+                                        : 'Income',
+                                  ),
+                                  subtitle: Text(
+                                    '₹${transaction.amount}  ${transaction.type != 'Income' ? '• ' + transaction.type : ''}',
+                                  ),
+                                  trailing: Text(
+                                    '${transaction.date.day}/${transaction.date.month}/${transaction.date.year}',
                                   ),
                                 );
                               },
                             );
                           },
                         ),
-                        // Placeholder for Category Breakdown
-                        Center(child: Text('Category Breakdown Placeholder')),
-                        // Placeholder for Savings Goals
-                        Center(child: Text('Savings Goals Placeholder')),
-                        // Placeholder for Reports
-                        Center(child: Text('Reports Placeholder')),
-                        // Placeholder for Settings
-                        Center(child: Text('Settings Placeholder')),
+
+                        CategoryBreakdownScreen(),
+
+                        SavingsGoalsScreen(),
+
+                        ReportsScreen(),
                       ],
                     ),
                   ),
@@ -71,16 +83,17 @@ class HomeScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to the Add Transaction Screen
           Navigator.pushNamed(context, '/addTransaction');
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
 class BalanceSummary extends StatelessWidget {
+  const BalanceSummary({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -88,32 +101,71 @@ class BalanceSummary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Balance Summary', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          SizedBox(height: 10),
+          const Text(
+            'Balance Summary',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
           Consumer<TransactionProvider>(
             builder: (context, provider, child) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Total Income Column
                   Column(
                     children: [
-                      Text('Total Income', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                      Text('₹${provider.totalIncome.toStringAsFixed(2)}', style: TextStyle(color: Colors.green, fontSize: 18, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Total Income',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        '₹${provider.totalIncome.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          color: Colors.green,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
-                  // Total Expenses Column
                   Column(
                     children: [
-                      Text('Total Expenses', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                      Text('₹${provider.totalExpenses.toStringAsFixed(2)}', style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Total Expenses',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        '₹${provider.totalExpenses.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
-                  // Savings Column
                   Column(
                     children: [
-                      Text('Savings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                      Text('₹${provider.totalSavings.toStringAsFixed(2)}', style: TextStyle(color: Colors.blue, fontSize: 18, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Savings',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        '₹${provider.totalSavings.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ],
