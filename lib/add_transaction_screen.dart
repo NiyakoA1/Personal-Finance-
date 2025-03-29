@@ -1,7 +1,8 @@
+// lib/add_transaction_screen.dart
 import 'package:flutter/material.dart';
-import 'package:project1/transaction_model.dart';
 import 'package:provider/provider.dart';
 import 'transaction_provider.dart';
+import 'transaction_model.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -24,6 +25,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Add Transaction')),
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

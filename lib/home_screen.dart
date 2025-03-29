@@ -1,3 +1,5 @@
+// lib/home_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'transaction_provider.dart';
@@ -11,7 +13,14 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Finance Tracker')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black, // sets text/icon color
+        elevation: 0, // remove shadow if desired
+        centerTitle: true,
+        title: Text('Finance Tracker'),
+      ),
       body: Column(
         children: [
           const BalanceSummary(),
@@ -30,6 +39,7 @@ class HomeScreen extends StatelessWidget {
                       Tab(icon: Icon(Icons.bar_chart), text: 'Reports'),
                     ],
                   ),
+                  // Each tab below points to its own screen
                   Expanded(
                     child: TabBarView(
                       children: [
@@ -81,6 +91,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+      // Same floating button to add new transaction
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pushNamed(context, '/addTransaction');
@@ -91,6 +102,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+// Same BalanceSummary widget with color-coded text
 class BalanceSummary extends StatelessWidget {
   const BalanceSummary({super.key});
 

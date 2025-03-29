@@ -1,10 +1,13 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:project1/add_transaction_screen.dart';
 import 'package:provider/provider.dart';
-import 'home_screen.dart';
+
+import 'transaction_model.dart';
 import 'transaction_provider.dart';
 import 'transaction_model.dart';
+import 'add_transaction_screen.dart';
+import 'home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

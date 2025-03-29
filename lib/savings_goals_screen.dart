@@ -10,20 +10,7 @@ class SavingsGoalsScreen extends StatefulWidget {
 }
 
 class _SavingsGoalsScreenState extends State<SavingsGoalsScreen> {
-  final List<SavingsGoal> _goals = [
-    SavingsGoal(
-      title: 'Vacation',
-      targetAmount: 10000,
-      currentAmount: 0,
-      deadline: DateTime(2025, 8, 1),
-    ),
-    SavingsGoal(
-      title: 'Laptop',
-      targetAmount: 60000,
-      currentAmount: 0,
-      deadline: DateTime(2025, 12, 31),
-    ),
-  ];
+  final List<SavingsGoal> _goals = [];
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _targetController = TextEditingController();
@@ -35,25 +22,41 @@ class _SavingsGoalsScreenState extends State<SavingsGoalsScreen> {
       builder: (context, provider, child) {
         double totalSavings = provider.totalSavings;
 
-        if (totalSavings <= 0) {
-          return Center(
-            child: Text('No savings yet. Add savings to track progress.'),
+        if (_goals.isEmpty) {
+          return Scaffold(
+            body: Center(
+              child: Text('No goals added yet. Tap + to add a goal.'),
+            ),
+            floatingActionButton: _buildAddGoalButton(),
           );
         }
 
-        final totalTarget = _goals.fold<double>(
-          0,
-          (sum, goal) => sum + goal.targetAmount,
-        );
+        // Sort goals by deadline (ascending)
+        List<SavingsGoal> sortedGoals = [..._goals];
+        sortedGoals.sort((a, b) => a.deadline.compareTo(b.deadline));
 
-        final updatedGoals =
-            _goals.map((goal) {
-              double allocated =
-                  (goal.targetAmount / totalTarget) * totalSavings;
-              return goal.copyWith(currentAmount: allocated);
-            }).toList();
+        // Allocate savings progressively to goals in deadline order
+        double remainingSavings = totalSavings;
+        List<SavingsGoal> updatedGoals = [];
+
+        for (var goal in sortedGoals) {
+          double allocatable = goal.targetAmount.clamp(0, remainingSavings);
+          updatedGoals.add(goal.copyWith(currentAmount: allocatable));
+          remainingSavings -= allocatable;
+          if (remainingSavings <= 0) break;
+        }
+
+        // For any goals left unallocated (no savings left), add them with 0
+        if (updatedGoals.length < sortedGoals.length) {
+          updatedGoals.addAll(
+            sortedGoals
+                .skip(updatedGoals.length)
+                .map((g) => g.copyWith(currentAmount: 0)),
+          );
+        }
 
         return Scaffold(
+          appBar: AppBar(title: Text('Savings Goals')),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -62,6 +65,7 @@ class _SavingsGoalsScreenState extends State<SavingsGoalsScreen> {
                   'Your Savings Goals',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
+                SizedBox(height: 10),
                 Expanded(
                   child: ListView.builder(
                     itemCount: updatedGoals.length,
@@ -101,16 +105,20 @@ class _SavingsGoalsScreenState extends State<SavingsGoalsScreen> {
                     },
                   ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: _showAddGoalDialog,
-                  icon: Icon(Icons.add),
-                  label: Text('Add New Goal'),
-                ),
               ],
             ),
           ),
+          floatingActionButton: _buildAddGoalButton(),
         );
       },
+    );
+  }
+
+  Widget _buildAddGoalButton() {
+    return FloatingActionButton.extended(
+      onPressed: _showAddGoalDialog,
+      icon: Icon(Icons.add),
+      label: Text('Add Goal'),
     );
   }
 
@@ -148,20 +156,22 @@ class _SavingsGoalsScreenState extends State<SavingsGoalsScreen> {
               ElevatedButton(
                 onPressed: () {
                   final newGoal = SavingsGoal(
-                    title: _titleController.text,
+                    title: _titleController.text.trim(),
                     targetAmount: double.tryParse(_targetController.text) ?? 0,
-                    currentAmount: 0, // Will be assigned proportionally
+                    currentAmount: 0,
                     deadline:
                         DateTime.tryParse(_deadlineController.text) ??
                         DateTime.now(),
                   );
-                  setState(() {
-                    _goals.add(newGoal);
-                  });
-                  _titleController.clear();
-                  _targetController.clear();
-                  _deadlineController.clear();
-                  Navigator.pop(context);
+                  if (newGoal.title.isNotEmpty && newGoal.targetAmount > 0) {
+                    setState(() {
+                      _goals.add(newGoal);
+                    });
+                    _titleController.clear();
+                    _targetController.clear();
+                    _deadlineController.clear();
+                    Navigator.pop(context);
+                  }
                 },
                 child: Text('Add'),
               ),
