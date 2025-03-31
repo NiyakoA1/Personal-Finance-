@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'transaction_provider.dart';
+
+// Your other screens
 import 'category_breakdown_screen.dart';
 import 'savings_goals_screen.dart';
 import 'reports_screen.dart';
@@ -21,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    // We have 4 tabs total
+    // We have 4 tabs total: Transactions, Categories, Goals, Reports
     _tabController = TabController(length: 4, vsync: this);
 
     // Listen for changes so we can rebuild & hide/show FAB
@@ -35,6 +37,9 @@ class _HomeScreenState extends State<HomeScreen>
     _tabController.dispose();
     super.dispose();
   }
+
+  // Only show the FAB on the first tab (Transactions)
+  bool get _showFab => _tabController.index == 0;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen>
       body: Column(
         children: [
           const BalanceSummary(),
-          // Use our custom tabController to manage the tabs
           Expanded(
             child: Column(
               children: [
@@ -69,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen>
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      // Transactions tab
+                      // Transactions Tab (inline list)
                       Consumer<TransactionProvider>(
                         builder: (context, provider, child) {
                           return ListView.builder(
@@ -91,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen>
                                       : 'Income',
                                 ),
                                 subtitle: Text(
-                                  '₹${transaction.amount}  '
+                                  '₹${transaction.amount} '
                                   '${transaction.type != 'Income' ? '• ' + transaction.type : ''}',
                                 ),
                                 trailing: Text(
@@ -103,13 +107,13 @@ class _HomeScreenState extends State<HomeScreen>
                         },
                       ),
 
-                      // Categories tab
+                      // Categories Tab
                       CategoryBreakdownScreen(),
 
-                      // Goals tab
+                      // Goals Tab
                       SavingsGoalsScreen(),
 
-                      // Reports tab
+                      // Reports Tab
                       ReportsScreen(),
                     ],
                   ),
@@ -119,8 +123,8 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       ),
-      // Show FAB only when on the Transactions tab (index == 0)
-      floatingActionButton: _tabController.index == 0
+      // FAB appears only on index == 0 (Transactions)
+      floatingActionButton: _showFab
           ? FloatingActionButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/addTransaction');
@@ -153,6 +157,7 @@ class BalanceSummary extends StatelessWidget {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // Total Income
                   Column(
                     children: [
                       const Text(
@@ -172,6 +177,7 @@ class BalanceSummary extends StatelessWidget {
                       ),
                     ],
                   ),
+                  // Total Expenses
                   Column(
                     children: [
                       const Text(
@@ -191,6 +197,7 @@ class BalanceSummary extends StatelessWidget {
                       ),
                     ],
                   ),
+                  // Savings
                   Column(
                     children: [
                       const Text(
