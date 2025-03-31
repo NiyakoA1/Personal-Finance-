@@ -1,4 +1,3 @@
-// lib/add_transaction_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'transaction_provider.dart';
@@ -14,12 +13,9 @@ class AddTransactionScreen extends StatefulWidget {
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final TextEditingController amountController = TextEditingController();
   final TextEditingController notesController = TextEditingController();
-  final TextEditingController categoryController = TextEditingController(
-    text: 'Food',
-  );
 
-  String transactionType = 'Income';
-  String category = 'Food';
+  String? transactionType;
+  String? category;
 
   @override
   Widget build(BuildContext context) {
@@ -48,42 +44,33 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   }).toList(),
               onChanged: (value) {
                 setState(() {
-                  transactionType = value!;
-
-                  if (transactionType == 'Income') category = 'Income';
+                  transactionType = value;
+                  category = null;
                 });
               },
               decoration: InputDecoration(labelText: 'Transaction Type'),
             ),
             const SizedBox(height: 10),
 
-            DropdownButtonFormField<String>(
-              value: category,
-              items:
-                  ['Food', 'Rent', 'Entertainment', 'Bills', 'Other'].map((
-                    String cat,
-                  ) {
-                    return DropdownMenuItem<String>(
-                      value: cat,
-                      child: Text(cat),
-                    );
-                  }).toList(),
-              onChanged:
-                  transactionType == 'Expense'
-                      ? (value) {
-                        setState(() {
-                          category = value!;
-                        });
-                      }
-                      : null,
-              decoration: InputDecoration(
-                labelText: 'Category',
-                helperText:
-                    transactionType == 'Income'
-                        ? 'Category not required for income'
-                        : 'Choose expense category',
+            if (transactionType == 'Expense')
+              DropdownButtonFormField<String>(
+                value: category,
+                items:
+                    ['Food', 'Rent', 'Entertainment', 'Bills', 'Other'].map((
+                      String cat,
+                    ) {
+                      return DropdownMenuItem<String>(
+                        value: cat,
+                        child: Text(cat),
+                      );
+                    }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    category = value;
+                  });
+                },
+                decoration: InputDecoration(labelText: 'Category'),
               ),
-            ),
             const SizedBox(height: 10),
 
             TextField(
@@ -95,11 +82,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             ElevatedButton(
               onPressed: () {
                 double amount = double.tryParse(amountController.text) ?? 0.0;
-                if (amount > 0) {
+                if (amount > 0 && transactionType != null) {
                   final newTransaction = TransactionModel(
                     amount: amount,
-                    type: transactionType,
-                    category: transactionType == 'Income' ? 'Income' : category,
+                    type: transactionType!,
+                    category:
+                        transactionType == 'Income' ? 'Income' : category!,
                     date: DateTime.now(),
                     notes: notesController.text,
                   );
@@ -113,7 +101,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Please enter a valid amount'),
+                      content: Text(
+                        'Please enter a valid amount and select transaction type',
+                      ),
                     ),
                   );
                 }
